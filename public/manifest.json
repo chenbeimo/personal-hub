@@ -1,0 +1,16 @@
+{
+  "name": "个人工作台",
+  "short_name": "Personal Hub",
+  "description": "每日计划、习惯追踪、灵感记录、学习管理",
+  "start_url": "/personal-hub/",
+  "display": "standalone",
+  "background_color": "#f3e8ff",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "/personal-hub/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

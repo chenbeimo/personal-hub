@@ -143,3 +143,13 @@
 .animate-slide-in {
   animation: slideIn 0.3s ease-out;
 }
+
+/* Hide scrollbar for mobile nav */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

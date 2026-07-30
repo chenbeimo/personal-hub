@@ -7,6 +7,8 @@ import {
   Edit2,
   Trash2,
   History,
+  Flame,
+  Check,
 } from 'lucide-react';
 import useReviewStore from '../stores/reviewStore';
 import {
@@ -18,6 +20,7 @@ import {
   formatDate,
 } from '../utils/dateUtils';
 import EmptyState from '../components/EmptyState';
+import PageTransition from '../components/PageTransition';
 
 export default function DailyReview() {
   const [formData, setFormData] = useState({
@@ -28,6 +31,8 @@ export default function DailyReview() {
   });
   const [showHistory, setShowHistory] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [charCount, setCharCount] = useState(0);
 
   const {
     selectedDate,
@@ -132,7 +137,15 @@ export default function DailyReview() {
 
   const handleSave = () => {
     saveReview(formData);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2000);
   };
+
+  // 计算字数
+  useEffect(() => {
+    const total = Object.values(formData).reduce((sum, text) => sum + text.length, 0);
+    setCharCount(total);
+  }, [formData]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -160,27 +173,40 @@ export default function DailyReview() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-1">
-              📝 每日复盘
-            </h3>
-            <p className="text-sm text-gray-500">
-              已记录 {stats.total} 篇 · 连续 {stats.streak} 天
-            </p>
+    <PageTransition>
+      <div className="space-y-6">
+        {/* Streak Badge */}
+        {stats.streak >= 3 && (
+          <div className="glass-card p-4 bg-orange-50/50 border-orange-200 animate-fade-in">
+            <div className="flex items-center justify-center gap-2">
+              <Flame className="text-orange-500 animate-fire" size={20} />
+              <p className="text-sm font-medium text-orange-700">
+                连续复盘 {stats.streak} 天！继续保持 🔥
+              </p>
+            </div>
           </div>
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="btn-secondary flex items-center gap-2"
-          >
-            <History size={18} />
-            历史
-          </button>
+        )}
+
+        {/* Header */}
+        <div className="glass-card p-6 card-hover">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                📝 每日复盘
+              </h3>
+              <p className="text-sm text-gray-500">
+                已记录 {stats.total} 篇 · 连续 {stats.streak} 天
+              </p>
+            </div>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="btn-secondary flex items-center gap-2 btn-press"
+            >
+              <History size={18} />
+              历史
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* Date Switcher */}
       <div className="glass-card p-4">
@@ -262,19 +288,38 @@ export default function DailyReview() {
               />
             </div>
 
-            <div className="flex gap-3 justify-end">
-              {!canEdit && (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">
+                {charCount > 0 ? `已输入 ${charCount} 字` : ''}
+              </span>
+              <div className="flex gap-3">
+                {!canEdit && (
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="btn-secondary btn-press"
+                  >
+                    取消
+                  </button>
+                )}
                 <button
-                  onClick={() => setIsEditing(false)}
-                  className="btn-secondary"
+                  onClick={handleSave}
+                  className={`btn-primary flex items-center gap-2 btn-press ${
+                    saveSuccess ? 'bg-green-500 animate-success-flash' : ''
+                  }`}
                 >
-                  取消
+                  {saveSuccess ? (
+                    <>
+                      <Check size={18} />
+                      已保存
+                    </>
+                  ) : (
+                    <>
+                      <Save size={18} />
+                      保存复盘
+                    </>
+                  )}
                 </button>
-              )}
-              <button onClick={handleSave} className="btn-primary flex items-center gap-2">
-                <Save size={18} />
-                保存复盘
-              </button>
+              </div>
             </div>
           </div>
         ) : currentReview ? (
@@ -398,6 +443,7 @@ export default function DailyReview() {
           />
         </div>
       )}
-    </div>
+      </div>
+    </PageTransition>
   );
 }

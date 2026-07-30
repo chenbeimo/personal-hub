@@ -1,9 +1,11 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import DateHeader from './DateHeader';
 import MobileNav from './MobileNav';
 
 export default function Layout() {
+  const location = useLocation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-cyan-100">
       <div className="flex h-screen overflow-hidden">
@@ -20,7 +22,7 @@ export default function Layout() {
           {/* Page Content */}
           <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
             <div className="max-w-4xl mx-auto">
-              <Outlet />
+              <Outlet key={location.pathname} />
             </div>
           </main>
         </div>

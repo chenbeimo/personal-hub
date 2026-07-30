@@ -26,7 +26,7 @@ export default function ProgressRing({ percentage = 0, size = 80, strokeWidth = 
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className="transition-all duration-500 ease-in-out"
+          className="transition-all duration-700 ease-out"
         />
         {/* Gradient definition */}
         <defs>
@@ -37,7 +37,7 @@ export default function ProgressRing({ percentage = 0, size = 80, strokeWidth = 
         </defs>
       </svg>
       {/* Percentage text */}
-      <span className="absolute text-lg font-semibold text-purple-700">
+      <span className="absolute text-lg font-semibold text-purple-700 transition-all duration-300">
         {percentage}%
       </span>
     </div>

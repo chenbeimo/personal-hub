@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Briefcase,
   Plus,
@@ -13,12 +13,15 @@ import {
 import useJobStore, { jobStatuses, statusFlow, jobSources } from '../stores/jobStore';
 import { formatDate, formatDateTime } from '../utils/dateUtils';
 import EmptyState from '../components/EmptyState';
+import { triggerGoldConfetti } from '../utils/animations';
+import PageTransition from '../components/PageTransition';
 
 export default function JobTracker() {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [statusNotes, setStatusNotes] = useState('');
   const [showDetail, setShowDetail] = useState(null);
+  const [offerCelebration, setOfferCelebration] = useState(null);
 
   const {
     filter,
@@ -98,6 +101,14 @@ export default function JobTracker() {
   const handleConfirmAdvance = (newStatus) => {
     if (selectedJob) {
       advanceStatus(selectedJob.id, newStatus, statusNotes);
+
+      // Offer celebration
+      if (newStatus === 'offer') {
+        setOfferCelebration(selectedJob.id);
+        triggerGoldConfetti();
+        setTimeout(() => setOfferCelebration(null), 5000);
+      }
+
       setShowStatusModal(false);
       setSelectedJob(null);
     }
@@ -120,6 +131,7 @@ export default function JobTracker() {
     const allStatuses = ['pending', 'applied', 'written', 'interview', 'offer'];
     const currentIndex = allStatuses.indexOf(job.status);
     const isTerminal = job.status === 'accepted' || job.status === 'rejected';
+    const isOffer = job.status === 'offer';
 
     return (
       <div className="flex items-center gap-1 overflow-x-auto py-2">
@@ -135,13 +147,13 @@ export default function JobTracker() {
             <div key={status} className="flex items-center">
               <div className="flex flex-col items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${
                     isCurrent
-                      ? 'bg-purple-500 text-white animate-pulse'
+                      ? 'bg-purple-500 text-white animate-pulse-glow scale-110'
                       : isCompleted
                       ? 'bg-purple-500 text-white'
                       : 'bg-gray-200 text-gray-500'
-                  }`}
+                  } ${isOffer && status === 'offer' ? 'animate-gold-shimmer' : ''}`}
                 >
                   {isCompleted && !isCurrent ? '✓' : statusInfo.label[0]}
                 </div>
@@ -156,7 +168,7 @@ export default function JobTracker() {
               </div>
               {index < allStatuses.length - 1 && (
                 <div
-                  className={`w-6 h-0.5 mx-1 ${
+                  className={`w-6 h-0.5 mx-1 transition-all duration-500 ${
                     isCompleted ? 'bg-purple-500' : 'bg-gray-200'
                   }`}
                 />
@@ -254,17 +266,18 @@ export default function JobTracker() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-1">
-              💼 求职追踪
-            </h3>
-            <p className="text-sm text-gray-500">
-              进行中 {stats.active} · 已归档 {stats.archived}
-            </p>
+    <PageTransition>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="glass-card p-6 card-hover">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                💼 求职追踪
+              </h3>
+              <p className="text-sm text-gray-500">
+                进行中 {stats.active} · 已归档 {stats.archived}
+              </p>
           </div>
           <button onClick={handleAddNew} className="btn-primary flex items-center gap-2">
             <Plus size={18} />
@@ -301,9 +314,16 @@ export default function JobTracker() {
             const statusInfo = getStatusInfo(job.status);
             const nextStatuses = getNextStatuses(job.id);
             const isDetailOpen = showDetail === job.id;
+            const hasOffer = job.status === 'offer';
+            const isCelebrating = offerCelebration === job.id;
 
             return (
-              <div key={job.id} className="glass-card p-5">
+              <div
+                key={job.id}
+                className={`glass-card p-5 card-hover transition-all duration-500 ${
+                  hasOffer ? 'border-2 border-yellow-400 animate-gold-shimmer' : ''
+                } ${isCelebrating ? 'scale-105 shadow-2xl' : ''}`}
+              >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
@@ -330,7 +350,7 @@ export default function JobTracker() {
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleEdit(job)}
-                      className="p-2 rounded-lg hover:bg-gray-100 text-gray-400"
+                      className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 btn-press"
                     >
                       <Edit2 size={16} />
                     </button>
@@ -600,6 +620,7 @@ export default function JobTracker() {
 
       {/* Status Update Modal */}
       {showStatusModal && <StatusUpdateModal />}
-    </div>
+      </div>
+    </PageTransition>
   );
 }

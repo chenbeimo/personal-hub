@@ -4,35 +4,24 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 
-// Register Service Worker with update handling
+// Completely remove service worker - unregister all existing ones
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/personal-hub/sw.js')
-      .then((registration) => {
-        console.log('SW registered:', registration);
-
-        // Check for updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'activated') {
-              // New service worker activated, reload to get latest content
-              if (confirm('发现新版本，是否刷新页面获取最新内容？')) {
-                window.location.reload();
-              }
-            }
-          });
-        });
-      })
-      .catch((error) => {
-        console.log('SW registration failed:', error);
-      });
-
-    // Force check for update
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.update();
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => {
+      registration.unregister();
+      console.log('Unregistered service worker:', registration.scope);
     });
   });
+
+  // Also clear all caches
+  if ('caches' in window) {
+    caches.keys().then((cacheNames) => {
+      cacheNames.forEach((cacheName) => {
+        caches.delete(cacheName);
+        console.log('Deleted cache:', cacheName);
+      });
+    });
+  }
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(

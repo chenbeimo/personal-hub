@@ -6,6 +6,9 @@ import {
   Dumbbell,
   BookOpen,
   Languages,
+  FileText,
+  Briefcase,
+  Utensils,
 } from 'lucide-react';
 
 const navItems = [
@@ -15,6 +18,9 @@ const navItems = [
   { path: '/exercise', icon: Dumbbell, label: '锻炼身体' },
   { path: '/reading', icon: BookOpen, label: '每日阅读' },
   { path: '/english', icon: Languages, label: '英语学习' },
+  { path: '/review', icon: FileText, label: '每日复盘' },
+  { path: '/jobs', icon: Briefcase, label: '求职追踪' },
+  { path: '/meals', icon: Utensils, label: '好好吃饭' },
 ];
 
 export default function Sidebar() {

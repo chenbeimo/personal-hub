@@ -1,0 +1,47 @@
+{
+  "date": "2026-07-31",
+  "words": [
+    {
+      "word": "ambitious",
+      "phonetic": "/æmˈbɪʃəs/",
+      "meaning": "有雄心的，野心勃勃的",
+      "example": "She is an ambitious young woman who wants to become a CEO.",
+      "level": "CET4",
+      "category": "adjective"
+    },
+    {
+      "word": "inevitable",
+      "phonetic": "/ɪnˈevɪtəbl/",
+      "meaning": "不可避免的，必然的",
+      "example": "Change is inevitable in life.",
+      "level": "CET6",
+      "category": "adjective"
+    },
+    {
+      "word": "resilient",
+      "phonetic": "/rɪˈzɪliənt/",
+      "meaning": "有弹性的，能恢复的",
+      "example": "Children are often more resilient than adults.",
+      "level": "CET6",
+      "category": "adjective"
+    },
+    {
+      "word": "eloquent",
+      "phonetic": "/ˈeləkwənt/",
+      "meaning": "雄辩的，有口才的",
+      "example": "He gave an eloquent speech about climate change.",
+      "level": "GRE",
+      "category": "adjective"
+    },
+    {
+      "word": "pragmatic",
+      "phonetic": "/præɡˈmætɪk/",
+      "meaning": "务实的，实用主义的",
+      "example": "We need a pragmatic approach to solve this problem.",
+      "level": "GRE",
+      "category": "adjective"
+    }
+  ],
+  "totalWords": 5,
+  "difficulty": "medium"
+}

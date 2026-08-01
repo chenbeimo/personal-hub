@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, ListTodo, Trophy } from 'lucide-react';
+import { Plus, Trash2, ListTodo, Trophy, Play } from 'lucide-react';
 import useTodoStore from '../stores/todoStore';
 import TodoItem from '../components/TodoItem';
 import ProgressRing from '../components/ProgressRing';
@@ -7,6 +7,9 @@ import EmptyState from '../components/EmptyState';
 import { triggerConfetti, isLateNight, getLateNightMessage } from '../utils/animations';
 import { useAnimatedNumber, useStaggerAnimation } from '../hooks/useAnimations';
 import PageTransition from '../components/PageTransition';
+
+const BILIBILI_WEB_URL = 'https://www.bilibili.com';
+const BILIBILI_APP_SCHEME = 'bilibili://';
 
 const defaultTasks = [
   { text: '运动', category: '默认' },
@@ -74,6 +77,32 @@ export default function DailyPlan() {
     });
   };
 
+  // 打开 B 站（移动端尝试打开 App，否则打开网页）
+  const handleOpenBilibili = () => {
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // 移动端：尝试打开 App
+      const startTime = Date.now();
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = BILIBILI_APP_SCHEME;
+      document.body.appendChild(iframe);
+
+      // 如果 2 秒后还在，说明 App 没打开，跳转网页
+      setTimeout(() => {
+        const endTime = Date.now();
+        if (endTime - startTime < 2500) {
+          window.location.href = BILIBILI_WEB_URL;
+        }
+        document.body.removeChild(iframe);
+      }, 2000);
+    } else {
+      // 电脑端：直接打开网页
+      window.open(BILIBILI_WEB_URL, '_blank');
+    }
+  };
+
   return (
     <PageTransition>
       <div className="space-y-6">
@@ -112,6 +141,25 @@ export default function DailyPlan() {
             <ProgressRing percentage={animatedPercentage} />
           </div>
         </div>
+
+        {/* Bilibili 快捷入口 */}
+        <button
+          onClick={handleOpenBilibili}
+          className="w-full glass-card p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-200 btn-press"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-blue-500 rounded-xl flex items-center justify-center">
+              <Play size={20} className="text-white ml-0.5" />
+            </div>
+            <div className="text-left">
+              <p className="font-medium text-gray-800">想学习？来 B 站！</p>
+              <p className="text-xs text-gray-500">点击打开哔哩哔哩</p>
+            </div>
+          </div>
+          <div className="text-pink-500 group-hover:translate-x-1 transition-transform">
+            →
+          </div>
+        </button>
 
         {/* Filter Tabs */}
         <div className="flex gap-2">
